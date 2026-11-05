@@ -1,7 +1,8 @@
 "use client";
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, Environment, Float } from "@react-three/drei";
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 function Canopy() {
@@ -24,7 +25,14 @@ function Canopy() {
 }
 
 function Baobab() {
-  return <group position={[0, -.45, 0]}>
+  const tree = useRef<THREE.Group>(null);
+  const { pointer } = useThree();
+  useFrame((_, delta) => {
+    if (!tree.current) return;
+    tree.current.rotation.y = THREE.MathUtils.damp(tree.current.rotation.y, pointer.x * 0.18, 3, delta);
+    tree.current.rotation.x = THREE.MathUtils.damp(tree.current.rotation.x, -pointer.y * 0.08, 3, delta);
+  });
+  return <group ref={tree} position={[0, -.45, 0]}>
     <mesh position={[0, .45, 0]} scale={[.28, 1.1, .25]}><cylinderGeometry args={[.42, .58, 1.7, 32]} /><meshStandardMaterial color="#C6A45A" metalness={.72} roughness={.24} /></mesh>
     {[-.72, -.38, .38, .72].map((x, i) => <mesh key={i} position={[x * .52, 1.18 + (i % 2) * .08, 0]} rotation={[0, 0, -x * .55]} scale={[.1, .72, .1]}><cylinderGeometry args={[.12, .2, 1, 16]} /><meshStandardMaterial color="#C6A45A" metalness={.7} roughness={.25} /></mesh>)}
     <Canopy />
