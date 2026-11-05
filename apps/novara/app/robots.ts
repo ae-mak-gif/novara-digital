@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
 export default function robots(): MetadataRoute.Robots {
- return { rules: { userAgent: "*", disallow: "/" } };
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://novara-digital.vercel.app";
+  return { rules: { userAgent: "*", allow: "/" }, sitemap: `${base}/sitemap.xml` };
 }
