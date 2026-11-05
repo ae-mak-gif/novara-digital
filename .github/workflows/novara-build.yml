@@ -1,0 +1,27 @@
+name: NOVARA build check
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/novara/**"
+      - ".github/workflows/novara-build.yml"
+  pull_request:
+    paths:
+      - "apps/novara/**"
+      - ".github/workflows/novara-build.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/novara
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: npm run build
