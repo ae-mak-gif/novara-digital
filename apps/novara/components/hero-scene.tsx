@@ -20,6 +20,14 @@ function Canopy() {
         <cylinderGeometry args={[.006, .006, d.length(), 5]} /><meshStandardMaterial color="#286449" />
       </mesh>;
     })}
+    {Array.from({ length: 32 }, (_, i) => i * 2).flatMap((i) => [8, 16].map((offset) => {
+      const a = new THREE.Vector3(...points[i]);
+      const b = new THREE.Vector3(...points[(i + offset) % points.length]);
+      const d = b.clone().sub(a);
+      return <mesh key={"crosslink-" + i + "-" + offset} position={a.clone().add(b).multiplyScalar(.5).toArray()} quaternion={new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize())}>
+        <cylinderGeometry args={[.004, .004, d.length(), 4]} /><meshStandardMaterial color="#286449" transparent opacity={.72} />
+      </mesh>;
+    }))}
     {points.filter((_, i) => i % 4 === 0).map((p, i) => <mesh key={"node" + i} position={[p[0] * .72, p[1] + .12, p[2] * .72]}><sphereGeometry args={[.025, 12, 12]} /><meshStandardMaterial color="#C6A45A" metalness={.65} roughness={.25} /></mesh>)}
   </group>;
 }
