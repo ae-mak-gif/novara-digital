@@ -1,19 +1,27 @@
-name: NOVARA build check
+name: NOVARA website build checks
 
 on:
   push:
     branches: [main]
     paths:
       - "apps/novara/**"
+      - "apps/form-and-field/**"
+      - "apps/common-ground/**"
+      - "apps/northline-advisory/**"
+      - "apps/arcwell-systems/**"
       - ".github/workflows/novara-build.yml"
   pull_request:
     paths:
       - "apps/novara/**"
+      - "apps/form-and-field/**"
+      - "apps/common-ground/**"
+      - "apps/northline-advisory/**"
+      - "apps/arcwell-systems/**"
       - ".github/workflows/novara-build.yml"
   workflow_dispatch:
 
 jobs:
-  build:
+  nextjs-build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,5 +31,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
-      - run: npm run build
+          cache: npm
+          cache-dependency-path: apps/novara/package.json
+      - name: Install dependencies
+        run: npm install
+      - name: Build NOVARA
+        run: npm run build
+      - name: Check brand assets
+        run: test -s public/novara-mark.svg && test -s app/icon.svg
+      - name: Check all standalone portfolio sites
+        run: |
+          for site in ../form-and-field ../common-ground ../northline-advisory ../arcwell-systems; do
+            test -s "$site/index.html"
+          done
